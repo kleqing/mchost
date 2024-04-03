@@ -4,6 +4,6 @@ echo "RESTARTING..."
 echo
 echo "Stopping server..."
 ./stopserver
-
+echo
 echo "Starting server..."
 ./startserver
