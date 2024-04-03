@@ -4,6 +4,8 @@ echo "RESTARTING..."
 echo
 echo "Stopping server..."
 ./stopserver
+sleep 10
+echo "Please wait for 10 seconds to make sure that the server completely stop."
 echo
 echo "Starting server..."
 ./startserver
