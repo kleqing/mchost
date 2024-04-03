@@ -164,6 +164,10 @@ If you don't know what restarting your server mean, here's the step.
 ```
 ./startserver
 ```
+- Or you can use the command:
+```
+./restartserver
+```
 Now your server has fully restarted.
 ## Keeping the Server Alive 24/7
 There's only **ONE** way to keep your server online longer than 20 minutes:
