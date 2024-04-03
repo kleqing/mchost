@@ -1,0 +1,7 @@
+echo "RESTARTING..."
+echo
+echo "Stopping server..."
+./stopserver
+
+echo "Starting server..."
+./startserver
