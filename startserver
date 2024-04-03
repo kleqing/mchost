@@ -54,6 +54,8 @@ echo
 echo "Type [screen -ls] to check the Running Processes"
 echo "Type [screen -r server] to enter the Server Console"
 echo "Type [screen -r playit] to view your Server IP"
+echo "Type [screen -r afk] to run AFK mode"
+echo "Please keep the terminal open by do not closing browser!"
 echo ""
 echo "> To stop your server, type './stopserver' to stop"
 
