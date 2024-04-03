@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "RESTARTING..."
 echo
 echo "Stopping server..."
