@@ -1,8 +1,6 @@
 # Minecraft Cloud Shell Tutorial & Info  
 
-In this project, we'll teach you host your very own Java/Bedrock Minecraft Server using `Google Cloud Shell`. This works under `Ubuntu/Debian` based Linux operation system. This project requires **NO CREDIT CARD** and the whole project is entirely **FREE**! You can make a server without costing you anything.  
-  
-[![Star History Chart](https://api.star-history.com/svg?repos=lordofwizard/mcserver&type=Date)](https://star-history.com/#lordofwizard/mcserver&Date)
+In this project, we'll teach you host your very own Java/Bedrock Minecraft Server using `Google Cloud Shell`. This works under `Ubuntu/Debian` based Linux operation system.
 
 **The following features are added into this project are:**
 - Supports different type of Bedrock Servers
@@ -13,14 +11,6 @@ In this project, we'll teach you host your very own Java/Bedrock Minecraft Serve
 - Instant EULA script setup *(Completly skipping this part which makes other people's life much easier to manage)*
 - Faster Server Installation *(It would probably take you like approx 30 seconds to setup a server)*
 
-## Need help?
-> [**Watch this Tutorial with LordOfWizard**](https://youtu.be/2CdQUmNKRJI) `Latest`
-
-> [**Watch this Tutorial with ArcticWoof**](https://youtu.be/0j0ijkwddz8) `Outdated`
-
-> [**Submit any Issues here**](https://github.com/lordofwizard/mcserver/issues)
-
-> [**Join the Discord Server**](https://discord.gg/V2R26jBEzN)
 ### To do list
 - [x] Asking the user for the specific version they want to run of java.
 - [x] Add 3rd party sources in the list.
