@@ -39,7 +39,7 @@ git clone https://github.com/kleqing/mchost
 ```
 * Go into `mcserver` directory:
 ```
-cd mcserver
+cd mchost
 ```
 * Allow all commands executable:
 ```
