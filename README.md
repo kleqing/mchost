@@ -208,7 +208,7 @@ cd
 ``` 
 - Now delete the whole project *(Be careful, backup/download your world folder FIRST before deleting it. You can't go back once you do this command)*:
 ```
-sudo rm -r mcserver
+sudo rm -r mchost
 ```
 If the project is completely deleted, you can [Clone the Project](https://github.com/kleqing/mchost/blob/main/README.md#installation) again and it should be up to date with the new features and code from this project!
 ## Conclusion
