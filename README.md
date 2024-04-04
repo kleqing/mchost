@@ -1,13 +1,13 @@
 # Minecraft Cloud Shell Tutorial & Info  
 
-In this project, we'll teach you host your very own Java/Bedrock Minecraft Server using `Google Cloud Shell`. This works under `Ubuntu/Debian` based Linux operation system.
+This is the project that can host a minecraft server in cloud
 
 **The following features are added into this project are:**
 - Supports different type of Bedrock Servers
 - Clean & Friendly Interface
 - Supports Additional type of Java Server *(eg. Sponge, Paper, Fabric etc)*
 - Added Server Management
-- Easier functional scripts *(eg. [**./uninstall**](https://github.com/lordofwizard/mcserver/blob/main/README.md#uninstallremove-the-server) allows you to delete your server easily)*
+- Easier functional scripts *(eg. [**./uninstall**](https://github.com/kleqing/mchost/blob/main/README.md#uninstallremove-the-server) allows you to delete your server easily)*
 - Instant EULA script setup *(Completly skipping this part which makes other people's life much easier to manage)*
 - Faster Server Installation *(It would probably take you like approx 30 seconds to setup a server)*
 
@@ -17,7 +17,8 @@ In this project, we'll teach you host your very own Java/Bedrock Minecraft Serve
 - [x] Automatic message typer for typing something on the server. (AFK APP)
 - [x] More easy way to upload files on google drive.(use cloud-shell editor)
 - [x] Update script.
-### Server Specs:
+      
+### Host Specs:
 - **OS:** Debian GNU/Linux 10 (buster) x86_64
 - **RAM:** 8GB to 16GB
 - **Location:** Based on your physical location.
@@ -34,7 +35,7 @@ You can view your exact specs by doing `./specinfo`
 * Activate a [Google Cloud Shell](https://console.cloud.google.com/) on Google cloud.
 * Clone this GitHub Project into the Console:
 ```
-git clone https://github.com/lordofwizard/mcserver
+git clone https://github.com/kleqing/mchost
 ```
 * Go into `mcserver` directory:
 ```
@@ -76,7 +77,7 @@ Do `Ctrl + W` then press `Y` to save and press `Enter` exit the text editor.
 ```
 cd ..
 ```
-- And [Restart the Server](https://github.com/lordofwizard/mcserver/blob/main/README.md#restarting-your-server).
+- And [Restart the Server](https://github.com/kleqing/mchost/blob/main/README.md#restarting-your-server).
 * Now everything should be functional and ready. You can check if your server is up and running by doing `screen -r server`.
 ## Joining your Server
 * To join your server, start your server by doing `./startserver` *(If you haven't started it yet)* and do this command:
@@ -103,8 +104,6 @@ To completly stop the server, you can do `./stopserver` on the Linux console or 
 ## Third-Party Launcher
 * If you are using like a cracked version of **Minecraft Java Edition**
 
-Example: [Tlauncher](https://tlauncher.org/en/)
-
 - Go to `server.properties` and find the properties `online-mode`:
 ```
 nano server.properties
@@ -115,7 +114,7 @@ online-mode=false
 ```
 Do `Ctrl + W` then press `Y` to save and press `Enter` exit the text editor.
 
-- [Restart](https://github.com/lordofwizard/mcserver/blob/main/README.md#restarting-your-server) your server after you apply these changes.
+- [Restart](https://github.com/kleqing/mchost/blob/main/README.md#restarting-your-server) your server after you apply these changes.
 
 ## Access Server Files
 If you want to access your server files, go to `Open Editor` on the top right.
@@ -142,7 +141,6 @@ These servers aren't supported for custom variables:
 - Sponge `Java` *(This server type is too old and it only supports direct download)*
 - GoMint `Bedrock` *(No Variables needed for this type of server)*
 ## Older Version
-If you are using older version of Minecraft check out [this](https://github.com/lordofwizard/mcserver/wiki/Version) documentation and install it according to your need:
 
 You can go inside the server scripts and edit **ONLY** on this section of the code:
 ```
@@ -186,6 +184,14 @@ Sadly you can't use the host IP into your dedicated IP as it won't let you join 
 ### Mixed Server Specs
 Each Cloud Shell session will have different specs of your server based on your physical location so you won't always get the best performance of your server but good news being that it's always the range between `8GB` to `16GB` so you won't have to worry about lag when playing in the server with high processing in your server.
 
+## AFK Server
+While running the server, you can type
+```
+./startafk
+```
+to run AFK batch file, which will make the terminal always connected 
+
+* Attention that you also do not close dashboard tab if you don't want the server closed!
 ## Uninstall/Remove the Server
 - If you want to make a new or delete your server, do this command inside `~/mcserver`:
 ```
@@ -204,12 +210,10 @@ cd
 ```
 sudo rm -r mcserver
 ```
-If the project is completely deleted, you can [Clone the Project](https://github.com/lordofwizard/mcserver/blob/main/README.md#installation) again and it should be up to date with the new features and code from this project!
+If the project is completely deleted, you can [Clone the Project](https://github.com/kleqing/mchost/blob/main/README.md#installation) again and it should be up to date with the new features and code from this project!
 ## Conclusion
-Now you can host your very own Minecraft Server for both Java & Bedrock fast and easy and it won't cost you a single penny to make a fast and strong server. Best of all, IT'S FOREVER! Feel free to leave any requests you would like me to add into the project. If you have any issues, go to the [**Issues**](https://github.com/lordofwizard/mcserver/issues) tab and submit a issue there.
+Now you can host your very own Minecraft Server for both Java & Bedrock fast and easy and it won't cost you a single penny to make a fast and strong server. Best of all, IT'S FOREVER! Feel free to leave any requests you would like me to add into the project. If you have any issues, go to the [**Issues**](https://github.com/kleqing/mchost/issues) tab and submit a issue there.
+
 ## Credits
-> Project Creator: *[LordOfWizard](https://github.com/lordofwizard)*
+* Original credit belong to: *[LordOfWizard](https://github.com/lordofwizard)*
 
-> Tutorial Creator: *[DumbCaveSpider](https://github.com/DumbCaveSpider)*
-
-> Project Maintainer: *[Silent-Crafter](https://github.com/Silent-Crafter)*
