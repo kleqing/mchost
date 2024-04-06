@@ -56,6 +56,7 @@ echo "Type [screen -r server] to enter the Server Console"
 echo "Type [screen -r playit] to view your Server IP"
 echo "Type [screen -r afk] to run AFK mode"
 echo "Please keep the terminal open by do not closing browser!"
+echo "If playit doesn't start, type 'playit' to run playit server for the first time."
 echo ""
 echo "> To stop your server, type './stopserver' to stop"
 
