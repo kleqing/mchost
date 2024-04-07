@@ -50,7 +50,7 @@ fi
 
 if [ ! -z $FORGE_VERSION ]; then
 	DOWNLOAD_LINK=https://maven.minecraftforge.net/net/minecraftforge/forge/${FORGE_VERSION}-${BUILD_TYPE}/forge-${FORGE_VERSION}
-    	FORGE_JAR=forge-${FORGE_VERSION}*.jar
+        FORGE_JAR=forge-${FORGE_VERSION}*.jar
 
 else
 
@@ -69,8 +69,8 @@ else
 
 	## Error if the mc version set wasn't valid.
     if [ "${VERSION_KEY}" == "" ] || [ "${VERSION_KEY}" == "null" ]; then
-    	echo -e "The install failed because there is no valid version of forge for the version on minecraft selected."
-    	exit 1
+        echo -e "The install failed because there is no valid version of forge for the version on minecraft selected."
+        exit 1
     fi
 
 	FORGE_VERSION=`echo -e ${JSON_DATA} | jq -r --arg VERSION_KEY "$VERSION_KEY" '.promos | .[$VERSION_KEY]'`

@@ -12,19 +12,6 @@ if [ -f $MAIN_DIR/server/bedrock_server ]; then
 
 echo "> Bedrock Server Detected! Starting Server up..."
 
-elif [ ! -f $MAIN_DIR/server/eula.txt ]; then
-
-cd $MAIN_DIR/server
-echo "> EULA doesn't exist! Creating one!"
-sudo wget https://cdn.discordapp.com/attachments/715123369200189460/846712565530624050/eula.txt
-echo "> EULA Completed! Restarting Server"
-cd $MAIN_DIR
-screen -S server -d -m ./startJavaServer
-clear
-echo "> Your server just doing a second restart to fix the EULA file."
-killall screen
-./startserver
-exit
 elif [ -f $MAIN_DIR/server/eula.txt ]; then
 echo "> EULA Detected! Starting Server up..."
 
@@ -56,7 +43,7 @@ echo "Type [screen -r server] to enter the Server Console"
 echo "Type [screen -r playit] to view your Server IP"
 echo "Type [screen -r afk] to run AFK mode"
 echo "Please keep the terminal open by do not closing browser and make sure it is running at AFK mode!"
-echo "If playit doesn't start, type './installPlayIt' to run playit server for the first time."
+echo "If playit doesn't start, type './installPlayIt' and 'playit' to run playit server for the first time."
 echo ""
 echo "> To stop your server, type './stopserver' to stop"
 
