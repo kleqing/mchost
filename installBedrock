@@ -72,10 +72,7 @@ fi
 # Backup install playit.gg in case if first one doesn't download
 echo "> Installing Playit.gg..."
 cd ..
-#wget "https://playit.gg/downloads/playit-linux_64-0.4.6" -O playit 
-wget -q "https://playit.gg/downloads/playit-0.8.1-beta" -O playit
-chmod +x playit
-echo "> Playit.gg Installation Completed!"
+./installPlayIt
 echo ""
 echo "-- Do you want to start the server now? --"
 echo "Type [1] for Yes"
