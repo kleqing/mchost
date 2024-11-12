@@ -1,0 +1,14 @@
+echo ">> Installing playit"
+./InstallPlayIt
+
+sleep 3
+echo "Please wait.."
+echo "Activating playit"
+
+screen -S playit -d -m ./startPlayIt
+
+sleep 3
+echo "Please wait.."
+echo "Activating server..."
+
+./startserver
