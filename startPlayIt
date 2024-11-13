@@ -1,5 +1,4 @@
 #!/bin/bash
 export MAIN_DIR=$PWD
 
-cd $MAIN_DIR
-playit
+screen -S playit_session -dm bash -c "cd $MAIN_DIR && playit"
