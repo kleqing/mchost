@@ -47,5 +47,8 @@ echo "If playit doesn't start, type './installPlayIt' and 'playit' to run playit
 echo ""
 echo "> To stop your server, type './stopserver' to stop"
 
+echo "> Running 'screen -command' allow you to check status of that screen"
+echo "> To exit screen, press 'Ctrl + A -> D' to exit screen"
+
 echo -e '\nchecking if server has launched properly'
 ./.checkserver 2> crash.log
