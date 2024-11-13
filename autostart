@@ -8,8 +8,5 @@ echo ">> Install playit"
 
 sleep 3
 
-echo ">> starting playit..."
-./startPlayIt
-
-echo ">> Calling server"
+echo ">> Calling server..."
 ./startserver
