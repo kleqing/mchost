@@ -1,2 +1,10 @@
 echo ">> Install playit"
 ./installPlayIt
+
+sleep 3
+
+echo ">> starting playit..."
+./startPlayIt
+
+echo ">> Calling server"
+./startserver
