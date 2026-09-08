@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo apt update -qq  
+sudo apt update -qq
 sudo apt install -y -qq curl jq unzip dos2unix wget
 
 cd ..
@@ -39,9 +39,6 @@ fi
 wget -O fabric-installer.jar https://maven.fabricmc.net/net/fabricmc/fabric-installer/$FABRIC_VERSION/fabric-installer-$FABRIC_VERSION.jar
 ../bin/java_bins/bin/java -jar fabric-installer.jar server -mcversion $MC_VERSION -downloadMinecraft
 
-if [ -f fabric-server-launch.jar ]; then
-  mv fabric-server-launch.jar server.jar
-fi
 echo "eula=true" > eula.txt
 
 echo -e "Install Complete"

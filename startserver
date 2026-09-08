@@ -1,9 +1,9 @@
 #!/bin/bash
 export MAIN_DIR=$PWD
-echo "> Starting the server up. Please wait..."                                                                                 
+echo "> Starting the server up. Please wait..."
 echo "> Installing Dependencise..."
 
-sudo apt install -y -qq screen wget  
+sudo apt install -y -qq screen wget
 
 echo "> Dependencise Installed!"
 
@@ -26,9 +26,14 @@ fi
 # apparently ppl keep spamming startserver and end up having multiple screens of the same app
 killall screen
 
-screen -S server -d -m ./startJavaServer # Starting Java Server
-screen -S server -d -m ./startBedrockServer # Starting Bedrock Server
+if [ -f "$MAIN_DIR/server/bedrock_server" ]; then
+    screen -S server -d -m ./startBedrockServer # Starting Bedrock Server
+else
+    screen -S server -d -m ./startJavaServer # Starting Java Server
+fi
+
 screen -S afk -d -m ./startAfk #Starting AFK app aka bpytop.
+
 screen -S playit -d -m ./startPlayIt # Starting Playit
 
 cd $MAIN_DIR/server

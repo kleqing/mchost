@@ -1,17 +1,22 @@
 #!/bin/bash
+
 export MAIN_DIR=$PWD
 export JAVA=$MAIN_DIR/bin/java_bins/bin/java
-cd server
 
-mem=$(grep MemTotal /proc/meminfo | sed -e 's/MemTotal:[ ]*//' | sed -e 's/ kB//') # some new stuff 
+cd "$MAIN_DIR/server" || exit 1
 
-mem_total=$(($mem/1024/1024))
-mem=$(($mem_total - 1))
-if [ $mem -lt 1 ]; then
-  mem=1
+mem=$(grep MemTotal /proc/meminfo | sed -e 's/MemTotal:[ ]*//' | sed -e 's/ kB//')
+mem_total=$((mem / 1024 / 1024))
+mem=$((mem_total - 1))
+
+if [ "$mem" -lt 1 ]; then
+    mem=1
 fi
 
-#uncomment this below line only if the server you are running is 1.17+ (if it is uncommented by default keep it as it is).
-$JAVA -Xmx${mem}G -Xms${mem}G -jar server.jar nogui
-# for 1.16 or lower uncomment this line
-#java -Xmx${mem}G -Xms${mem}G -jar server.jar nogui
+if [ -f "fabric-server-launch.jar" ]; then
+    SERVER_JAR="fabric-server-launch.jar"
+else
+    SERVER_JAR="server.jar"
+fi
+
+exec "$JAVA" -Xmx${mem}G -Xms${mem}G -jar "$SERVER_JAR" nogui
