@@ -7,11 +7,16 @@ mkdir -p server
 cd server
 
 echo -e 'Please check if your mc version is available: https://meta.fabricmc.net/v2/versions/game'
-echo -e '\n> Enter Minecraft version: '
-read MC_VERSION
+if [ -f "../.mc_version" ]; then
+    MC_VERSION=$(cat ../.mc_version)
+    echo "> Using Minecraft version: $MC_VERSION"
+else
+    echo -e '\n> Enter Minecraft version: '
+    read MC_VERSION
+fi
 
 if [ -z "$MC_VERSION" ]; then
-  $MC_VERSION=latest
+  MC_VERSION=latest
   echo -e 'continuing with the latest version'
 fi
 
@@ -32,5 +37,11 @@ if [ -z "$FABRIC_VERSION" ] || [ "$FABRIC_VERSION" == "latest" ]; then
   FABRIC_VERSION=$(curl -sSL https://meta.fabricmc.net/v2/versions/installer | jq -r '.[0].version')
 fi
 wget -O fabric-installer.jar https://maven.fabricmc.net/net/fabricmc/fabric-installer/$FABRIC_VERSION/fabric-installer-$FABRIC_VERSION.jar
-java -jar fabric-installer.jar server -mcversion $MC_VERSION -downloadMinecraft
+../bin/java_bins/bin/java -jar fabric-installer.jar server -mcversion $MC_VERSION -downloadMinecraft
+
+if [ -f fabric-server-launch.jar ]; then
+  mv fabric-server-launch.jar server.jar
+fi
+echo "eula=true" > eula.txt
+
 echo -e "Install Complete"

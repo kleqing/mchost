@@ -5,7 +5,9 @@ This is the project that can host a minecraft server in cloud
 **The following features are added into this project are:**
 - Supports different type of Bedrock Servers
 - Clean & Friendly Interface
-- Supports Additional type of Java Server *(eg. Sponge, Paper, Fabric etc)*
+- Supports Additional type of Java Server *(eg. Sponge, Paper, Fabric, NeoForge etc)*
+- **Smart Java Auto-detection** *(Automatically downloads JDK 8, 17, 21, or 25 based on your Minecraft version)*
+- **Memory Safety** *(Automatically reserves 1GB RAM for the host OS to prevent out-of-memory crashes)*
 - Added Server Management
 - Easier functional scripts *(eg. [**./uninstall**](https://github.com/kleqing/mchost/blob/main/README.md#uninstallremove-the-server) allows you to delete your server easily)*
 - Instant EULA script setup *(Completly skipping this part which makes other people's life much easier to manage)*
@@ -129,6 +131,7 @@ If you want to change the variables inside the script or just tweak something fo
 The following `Java` servers are supported for custom variables:
 - **Fabric**
 - **Forge**
+- **NeoForge**
 - **Paper**
 - **Vanilla**
 

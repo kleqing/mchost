@@ -1,0 +1,76 @@
+#!/bin/bash
+sudo apt update -qq  
+sudo apt install -y -qq curl jq unzip wget
+
+export MAIN_DIR=$(pwd)
+cd ..
+mkdir -p server
+cd server
+
+echo "> Fetching NeoForge versions data..."
+
+if [ -f "../.mc_version" ]; then
+    MC_VERSION=$(cat ../.mc_version)
+    echo "> Using Minecraft version: $MC_VERSION"
+else
+    echo -e '\n> Enter Minecraft version: '
+    read MC_VERSION
+fi
+
+if [ -z "$MC_VERSION" ] || [ "$MC_VERSION" == "latest" ]; then
+    MC_VERSION="1.21.1" # Default fallback
+fi
+
+# Fetch versions from NeoForge Maven API
+VERSIONS_JSON=$(curl -sSL https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge)
+
+# Filter versions that match MC version (e.g., MC 1.21.x -> NeoForge 21.x)
+MC_MINOR=$(echo "$MC_VERSION" | cut -d. -f2)
+NEOFORGE_MAJOR="$MC_MINOR"
+
+LATEST_NEOFORGE=$(echo "$VERSIONS_JSON" | jq -r '.versions[]' | grep "^${NEOFORGE_MAJOR}\." | grep -v "beta" | tail -n 1)
+
+if [ -z "$LATEST_NEOFORGE" ]; then
+    # Fallback to beta if no stable found
+    LATEST_NEOFORGE=$(echo "$VERSIONS_JSON" | jq -r '.versions[]' | grep "^${NEOFORGE_MAJOR}\." | tail -n 1)
+fi
+
+if [ -z "$LATEST_NEOFORGE" ]; then
+    echo "!!! Could not find NeoForge version for Minecraft $MC_VERSION !!!"
+    exit 1
+fi
+
+echo "> Selected NeoForge version: $LATEST_NEOFORGE"
+DOWNLOAD_LINK="https://maven.neoforged.net/releases/net/neoforged/neoforge/${LATEST_NEOFORGE}/neoforge-${LATEST_NEOFORGE}-installer.jar"
+
+echo "> Downloading NeoForge installer..."
+curl -s -o installer.jar -sS "$DOWNLOAD_LINK"
+
+if [ ! -f ./installer.jar ]; then
+    echo "!!! Error downloading NeoForge installer !!!"
+    exit 2
+fi
+
+echo -e "> Installing NeoForge server...\n"
+../bin/java_bins/bin/java -jar installer.jar --installServer || { echo -e "Install failed"; exit 3; }
+
+echo -e "> Deleting installer.jar file.\n"
+rm -rf installer.jar
+
+# creating launch file
+echo "eula=true" > eula.txt
+
+NEOFORGE_RUN_FILE=./run.sh
+if [ -f "$NEOFORGE_RUN_FILE" ]; then
+    echo "#!/bin/bash
+export JAVA=../bin/java_bins/bin/java
+\$JAVA @user_jvm_args.txt @libraries/net/neoforged/neoforge/${LATEST_NEOFORGE}/unix_args.txt \"\$@\"" > run.sh
+    chmod +x ./run.sh
+
+    echo '#!/bin/bash
+cd server
+./run.sh -nogui' > ../startJavaServer
+    chmod +x ../startJavaServer
+fi
+
+echo -e "> Install Complete"

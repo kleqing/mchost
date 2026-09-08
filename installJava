@@ -80,6 +80,12 @@ install_server () {
     chmod +x *
     ./BungeecordInstall
 
+  elif [[ $choice == 8 ]];then
+    echo "> Installing NeoForge..."
+    cd JavaInstallScripts
+    chmod +x *
+    ./NeoForgeInstall
+
   
   # Invaild Input
   else
@@ -106,8 +112,9 @@ echo "Type [4] Create Sponge Server"
 echo "Type [5] Create Fabric Server"
 echo "Type [6] Create Spigot Server(COMPILE)"
 echo "Type [7] Create Bungeecord Server(latest)"
-choiceForServer=1
-read choiceForServer
+echo "Type [8] Create NeoForge Server"
+echo ""
+read -p "> Enter your choice (1-8): " choiceForServer
 
 install_server $choiceForServer
 
