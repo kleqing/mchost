@@ -1,5 +1,5 @@
 #!/bin/bash
-mkdir bin
+mkdir -p bin
 chmod +x *
 export MAIN_DIR=$PWD
 echo "Which Server do you want to install?"
@@ -16,7 +16,7 @@ if [[ -z $choiceForServer || $choiceForServer == 1 ]]; then
     if [[ -z $MC_VERSION ]]; then
         MC_VERSION="latest"
     fi
-    echo "$MC_VERSION" > $MAIN_DIR/.mc_version
+    echo "$MC_VERSION" > "$MAIN_DIR/.mc_version"
 
     # Auto-detect Java version
     JAVA_VER=21
@@ -33,13 +33,13 @@ if [[ -z $choiceForServer || $choiceForServer == 1 ]]; then
     fi
 
     echo "> Selected Java $JAVA_VER for Minecraft $MC_VERSION"
-    cd $MAIN_DIR/bin
+    cd "$MAIN_DIR/bin"
     wget -q --show-progress -O java.tar.gz "https://api.adoptium.net/v3/binary/latest/${JAVA_VER}/ga/linux/x64/jdk/hotspot/normal/eclipse"
     echo "> Extracting Java JDK $JAVA_VER to the bin/ folder. [THIS MAY TAKE SOME TIME]"
     tar -xzf java.tar.gz
     DIR_NAME=$(ls -d jdk* | head -n 1)
     mv "$DIR_NAME" java_bins
-    cd $MAIN_DIR
+    cd "$MAIN_DIR"
 fi
 
 cd $MAIN_DIR
@@ -51,13 +51,13 @@ if [[ -z $choiceForServer ]]; then
 
 # If choice is 1 then run this command
 elif [[ $choiceForServer == 1 ]]; then
-	
+
 	echo "> Running Java Installation..."
   ./installJava
 
 # If choice is 1 then run this command
 elif [[ $choiceForServer == 2 ]]; then
-	
+
 	echo "> Running Bedrock Installation..."
   ./installBedrock
 
@@ -65,7 +65,14 @@ else
 	echo "> Invaild Respond. Please try again."
 	./install
 fi
-echo "> Installing AFK(Away From Keyboard) Script "
-python3 -m pip install bpytop
-echo ""
 
+echo "> Installing AFK (Away From Keyboard)..."
+python3 -m pip install --user --disable-pip-version-check -q bpytop >/dev/null 2>&1
+
+if [ -x "$HOME/.local/bin/bpytop" ]; then
+    echo "> AFK dependency installed successfully."
+else
+    echo "> Failed to install AFK dependency."
+fi
+
+echo ""
