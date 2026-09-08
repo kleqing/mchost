@@ -1,5 +1,34 @@
-#!/bin/bash
-export MAIN_DIR=$PWD
+#!/usr/bin/env bash
 
-cd $MAIN_DIR
-playit
+PLAYITD="$HOME/.local/bin/playitd"
+PLAYIT="$HOME/.local/bin/playit"
+
+RUNTIME_DIR="$HOME/.cache/playit_gg"
+SOCKET="$RUNTIME_DIR/playitd.sock"
+SECRET="$HOME/.config/playit_gg/playit.toml"
+
+mkdir -p "$RUNTIME_DIR"
+mkdir -p "$(dirname "$SECRET")"
+
+# Xóa socket cũ nếu daemon trước đã chết
+rm -f "$SOCKET"
+
+# Start daemon
+"$PLAYITD" \
+    --socket-path "$SOCKET" \
+    --secret-path "$SECRET" &
+
+DAEMON_PID=$!
+
+# Đợi socket xuất hiện
+for i in {1..50}; do
+    [ -S "$SOCKET" ] && break
+    sleep 0.1
+done
+
+# Mở CLI kết nối vào daemon
+"$PLAYIT" --socket-path "$SOCKET"
+
+# Khi CLI kết thúc thì dừng daemon
+kill "$DAEMON_PID" 2>/dev/null || true
+wait "$DAEMON_PID" 2>/dev/null || true

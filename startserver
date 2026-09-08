@@ -1,59 +1,91 @@
-#!/bin/bash
-export MAIN_DIR=$PWD
+#!/usr/bin/env bash
+
+export MAIN_DIR="$PWD"
+SERVER_DIR="$MAIN_DIR/server"
+
 echo "> Starting the server up. Please wait..."
-echo "> Installing Dependencise..."
+echo "> Installing dependencies..."
 
 sudo apt install -y -qq screen wget
 
-echo "> Dependencise Installed!"
+echo "> Dependencies installed!"
+echo "> Checking server type..."
 
-echo "> Checking Server Type..."
-if [ -f $MAIN_DIR/server/bedrock_server ]; then
+detect_server_type() {
+    if [ -f "$SERVER_DIR/bedrock_server" ]; then
+        echo "bedrock-vanilla"
+    elif [ -f "$SERVER_DIR/PocketMine-MP.phar" ]; then
+        echo "bedrock-pocketmine"
+    elif [ -f "$SERVER_DIR/nukkit.yml" ] && [ -f "$SERVER_DIR/server.jar" ]; then
+        echo "bedrock-nukkit"
+    elif [ -d "$SERVER_DIR/modules" ] && [ -f "$SERVER_DIR/server.yml" ]; then
+        echo "bedrock-gomint"
+    elif [ -f "$SERVER_DIR/eula.txt" ] \
+        || [ -f "$SERVER_DIR/server.jar" ] \
+        || [ -f "$SERVER_DIR/fabric-server-launch.jar" ] \
+        || [ -f "$SERVER_DIR/run.sh" ]; then
+        echo "java"
+    else
+        echo "unknown"
+    fi
+}
 
-echo "> Bedrock Server Detected! Starting Server up..."
+SERVER_TYPE="$(detect_server_type)"
 
-elif [ -f $MAIN_DIR/server/eula.txt ]; then
-echo "> EULA Detected! Starting Server up..."
+case "$SERVER_TYPE" in
+    bedrock-vanilla)
+        echo "> Bedrock Dedicated Server detected!"
+        ;;
+    bedrock-pocketmine)
+        echo "> PocketMine-MP server detected!"
+        ;;
+    bedrock-nukkit)
+        echo "> Nukkit server detected!"
+        ;;
+    bedrock-gomint)
+        echo "> GoMint server detected!"
+        ;;
+    java)
+        echo "> Java server detected!"
+        ;;
+    *)
+        echo "> Could not detect a valid Minecraft server installation."
+        echo "> Run './install' to install a server, or './uninstall' first if you want a clean reinstall."
+        exit 1
+        ;;
+esac
 
-else
-echo "> Your server isn't setup properly. Force uninstall..."
-cd $MAIN_DIR
-./uninstall
-echo "> Comfirmed Uninstallation! Restarting Installation..."
-./install
-fi
+# Prevent duplicate project sessions without killing unrelated screen sessions.
+screen -S server -X quit 2>/dev/null || true
+screen -S playit -X quit 2>/dev/null || true
+screen -S afk -X quit 2>/dev/null || true
 
-# apparently ppl keep spamming startserver and end up having multiple screens of the same app
-killall screen
+# Start exactly one Minecraft server implementation.
+case "$SERVER_TYPE" in
+    java)
+        screen -S server -d -m ./startJavaServer
+        ;;
+    bedrock-*)
+        screen -S server -d -m ./startBedrockServer "$SERVER_TYPE"
+        ;;
+esac
 
-if [ -f "$MAIN_DIR/server/bedrock_server" ]; then
-    screen -S server -d -m ./startBedrockServer # Starting Bedrock Server
-else
-    screen -S server -d -m ./startJavaServer # Starting Java Server
-fi
+# Start AFK helper and Playit tunnel.
+screen -S afk -d -m ./startAfk
+screen -S playit -d -m ./startPlayIt
 
-screen -S afk -d -m ./startAfk #Starting AFK app aka bpytop.
-
-screen -S playit -d -m ./startPlayIt # Starting Playit
-
-cd $MAIN_DIR/server
-screen -S server -d -m ./bin/php7/bin/php ./PocketMine-MP.phar --no-wizard --disable-ansi # Starting PocketmineMP
-screen -S server -d -m java --add-opens java.base/java.nio=io.netty.common --add-exports java.base/jdk.internal.misc=io.netty.common -p modules -m gomint.server/io.gomint.server.Bootstrap # Starting GoMint
-cd $MAIN_DIR
-
+echo
 echo "-- Your Server is now ONLINE! --"
 echo
-echo "Type [screen -ls] to check the Running Processes"
+echo "Type [screen -ls] to check the running processes"
 echo "Type [screen -r server] to enter the Server Console"
-echo "Type [screen -r playit] to view your Server IP"
-echo "Type [screen -r afk] to run AFK mode"
-echo "Please keep the terminal open by do not closing browser and make sure it is running at AFK mode!"
-echo "If playit doesn't start, type './installPlayIt' and 'playit' to run playit server for the first time."
-echo ""
-echo "> To stop your server, type './stopserver' to stop"
+echo "Type [screen -r playit] to view Playit"
+echo "Type [screen -r afk] to enter AFK mode"
+echo "Please keep the terminal/browser session alive and leave AFK mode running if your host requires it."
+echo "If Playit doesn't start, run './installPlayIt' then './startPlayIt'."
+echo
+echo "> To stop your server, type './stopserver'"
+echo "> To exit a screen without stopping it, press Ctrl+A then D"
 
-echo "> Running 'screen -command' allow you to check status of that screen"
-echo "> To exit screen, press 'Ctrl + A -> D' to exit screen"
-
-echo -e '\nchecking if server has launched properly'
+echo -e '\n> Checking if server launched properly...'
 ./.checkserver 2> crash.log

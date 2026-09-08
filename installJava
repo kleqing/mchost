@@ -97,11 +97,10 @@ install_server () {
 #Installing all the dependencise
 sudo apt install -y -qq screen neofetch 
 
-echo "export PATH=$PATH:/some/new/path" > ~/.profile
 echo "> Dependencies Installtion Completed!"
 
 #Downloading ngrok && Downloading Minecraft Server
-mkdir server 
+mkdir -p server 
 
 echo ""
 echo "-- Pick the following Server type: --"

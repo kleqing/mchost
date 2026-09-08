@@ -15,7 +15,7 @@ else
 fi
 
 # retrieve latest tag to be used as version match, because gomint doesn't use normal releases
-LATEST_VERSION=$(curl -sL https://api.github.com/repos/gomint/gomint/tags | jq -r '.[-1].name')
+LATEST_VERSION=$(curl -sL https://api.github.com/repos/gomint/gomint/tags | jq -r '.[0].name')
 
 DOWNLOAD_URL=https://github.com/gomint/gomint/releases/download/${LATEST_VERSION}/${LATEST_VERSION}.zip
 

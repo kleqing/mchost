@@ -37,7 +37,7 @@ fi
 
 ## this is a simple script to validate a download url actaully exists
 
-if [ ! -z "${DOWNLOAD_URL}"]; then 
+if [ -n "${DOWNLOAD_URL:-}" ]; then 
     if curl --output /dev/null --silent --head --fail ${DOWNLOAD_URL}; then
         echo -e "link is valid. setting download link to ${DOWNLOAD_URL}"
         DOWNLOAD_LINK=${DOWNLOAD_URL}
@@ -59,7 +59,7 @@ echo -e "\n unpacking php7 binaries"
 tar -xzvf php.binary.tar.gz
 
 echo -e "\n removing php7 packages"
-rm -rf /mnt/server/php.binary.tar.gz
+rm -f php.binary.tar.gz
 
 echo -e "\n creating files and folders"
 touch banned-ips.txt banned-players.txt ops.txt white-list.txt server.log

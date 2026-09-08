@@ -1,8 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-echo "> Downloading latest playit-agent binary..."
-curl -sL "https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64" -o playit
-chmod +x playit
-sudo mv playit /usr/local/bin/playit
-echo "> Playit.gg Installation Completed!"
-echo "> Type 'playit' or running command: './startserver' to run playit host"
+BIN_DIR="$HOME/.local/bin"
+mkdir -p "$BIN_DIR"
+
+echo "> Downloading Playit daemon..."
+curl -fL \
+    "https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64" \
+    -o "$BIN_DIR/playitd"
+
+echo "> Downloading Playit CLI..."
+curl -fL \
+    "https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-cli-linux-amd64" \
+    -o "$BIN_DIR/playit"
+
+chmod +x "$BIN_DIR/playitd"
+chmod +x "$BIN_DIR/playit"
+
+echo "> Playit.gg installation completed."
