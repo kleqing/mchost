@@ -18,6 +18,7 @@ ngrok
 # Local installation state
 # =========================
 .mc_version
+.server_type
 
 # =========================
 # Logs

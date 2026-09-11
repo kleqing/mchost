@@ -1,9 +1,11 @@
-#!/bin/bash
-clear
-echo "> Server Terminated!"
-echo ""
-echo "To run again, type './startserver' to reboot your server."
-echo "To delete your server, type './uninstall' to uninstall and delete your server."
+#!/usr/bin/env bash
 
-# Kill all Screen
-killall screen
+echo "> Stopping mchost sessions..."
+
+screen -S server -X quit 2>/dev/null || true
+screen -S playit -X quit 2>/dev/null || true
+screen -S afk -X quit 2>/dev/null || true
+
+echo "> Server terminated!"
+echo "> Run './startserver' to start it again."
+echo "> Run './uninstall' if you want to remove the installed server."

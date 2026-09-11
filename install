@@ -1,78 +1,96 @@
-#!/bin/bash
-mkdir -p bin
-chmod +x *
-export MAIN_DIR=$PWD
+#!/usr/bin/env bash
+set -e
+
+MAIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+mkdir -p "$MAIN_DIR/bin"
+chmod +x "$MAIN_DIR"/* 2>/dev/null || true
+
 echo "Which Server do you want to install?"
 echo "Type [1] Java Server"
 echo "Type [2] Bedrock Server"
-echo ""
-read -p "> Enter your choice (1 or 2): " choiceForServer
+echo
+read -r -p "> Enter your choice (1 or 2): " choiceForServer
 
-# Installing JDK and playit
-if [[ -z $choiceForServer || $choiceForServer == 1 ]]; then
-    echo ""
-    echo "> Enter Minecraft version (e.g., 1.21.1, 1.20.4, 1.16.5, 26.1): "
-    read -p "> " MC_VERSION
-    if [[ -z $MC_VERSION ]]; then
-        MC_VERSION="latest"
-    fi
-    echo "$MC_VERSION" > "$MAIN_DIR/.mc_version"
+case "$choiceForServer" in
+    1)
+        sudo apt install -y -qq curl jq wget tar
 
-    # Auto-detect Java version
-    JAVA_VER=21
-    if [[ "$MC_VERSION" == "latest" || "$MC_VERSION" == "snapshot" ]]; then
-        JAVA_VER=21
-    elif [ "$(printf '%s\n' "26.1" "$MC_VERSION" | sort -V | head -n1)" = "26.1" ]; then
-        JAVA_VER=25
-    elif [ "$(printf '%s\n' "1.20.5" "$MC_VERSION" | sort -V | head -n1)" = "1.20.5" ]; then
-        JAVA_VER=21
-    elif [ "$(printf '%s\n' "1.17" "$MC_VERSION" | sort -V | head -n1)" = "1.17" ]; then
-        JAVA_VER=17
-    else
-        JAVA_VER=8
-    fi
+        echo
+        read -r -p "> Enter Minecraft version (e.g., 1.21.1, 1.20.4, 26.1, latest): " MC_VERSION
+        MC_VERSION="${MC_VERSION:-latest}"
 
-    echo "> Selected Java $JAVA_VER for Minecraft $MC_VERSION"
-    cd "$MAIN_DIR/bin"
-    wget -q --show-progress -O java.tar.gz "https://api.adoptium.net/v3/binary/latest/${JAVA_VER}/ga/linux/x64/jdk/hotspot/normal/eclipse"
-    echo "> Extracting Java JDK $JAVA_VER to the bin/ folder. [THIS MAY TAKE SOME TIME]"
-    tar -xzf java.tar.gz
-    DIR_NAME=$(ls -d jdk* | head -n 1)
-    mv "$DIR_NAME" java_bins
-    cd "$MAIN_DIR"
-fi
+        # Resolve aliases now so every Java installer works with one concrete
+        # Minecraft version and Java selection remains correct as 'latest' moves.
+        VERSION_MANIFEST="$(curl -fsSL https://launchermeta.mojang.com/mc/game/version_manifest.json)"
+        case "$MC_VERSION" in
+            latest)
+                MC_VERSION="$(echo "$VERSION_MANIFEST" | jq -r '.latest.release')"
+                ;;
+            snapshot)
+                MC_VERSION="$(echo "$VERSION_MANIFEST" | jq -r '.latest.snapshot')"
+                ;;
+        esac
 
-cd $MAIN_DIR
-# If choice is 0 or null then run this command
-if [[ -z $choiceForServer ]]; then
+        if ! echo "$VERSION_MANIFEST" | jq -e --arg VERSION "$MC_VERSION" '.versions[] | select(.id == $VERSION)' >/dev/null; then
+            echo "> Minecraft version '$MC_VERSION' was not found in Mojang's version manifest."
+            exit 1
+        fi
 
-  echo "> Invaild Respond. Please try again."
-  ./install
+        echo "$MC_VERSION" > "$MAIN_DIR/.mc_version"
 
-# If choice is 1 then run this command
-elif [[ $choiceForServer == 1 ]]; then
+        # Runtime selection for the Minecraft generations supported by the repo.
+        # 26.1+ uses Java 25, 1.20.5-1.21.x uses Java 21,
+        # 1.18-1.20.4 uses Java 17, 1.17 uses Java 16, older uses Java 8.
+        if [[ "$MC_VERSION" != 1.* ]]; then
+            JAVA_VER=25
+        elif [ "$(printf '%s\n' "1.20.5" "$MC_VERSION" | sort -V | head -n1)" = "1.20.5" ]; then
+            JAVA_VER=21
+        elif [ "$(printf '%s\n' "1.18" "$MC_VERSION" | sort -V | head -n1)" = "1.18" ]; then
+            JAVA_VER=17
+        elif [ "$(printf '%s\n' "1.17" "$MC_VERSION" | sort -V | head -n1)" = "1.17" ]; then
+            JAVA_VER=16
+        else
+            JAVA_VER=8
+        fi
 
-	echo "> Running Java Installation..."
-  ./installJava
+        echo "> Resolved Minecraft version: $MC_VERSION"
+        echo "> Selected Java $JAVA_VER"
 
-# If choice is 1 then run this command
-elif [[ $choiceForServer == 2 ]]; then
+        cd "$MAIN_DIR/bin"
+        rm -rf java_bins java.tar.gz
+        rm -rf jdk-*
 
-	echo "> Running Bedrock Installation..."
-  ./installBedrock
+        wget -q --show-progress -O java.tar.gz \
+            "https://api.adoptium.net/v3/binary/latest/${JAVA_VER}/ga/linux/x64/jdk/hotspot/normal/eclipse"
 
-else
-	echo "> Invaild Respond. Please try again."
-	./install
-fi
+        echo "> Extracting Java JDK $JAVA_VER to bin/java_bins..."
+        TOP_DIR="$(tar -tzf java.tar.gz | head -n1 | cut -d/ -f1)"
+        tar -xzf java.tar.gz
+        mv "$TOP_DIR" java_bins
+        rm -f java.tar.gz
+
+        cd "$MAIN_DIR"
+        echo "> Running Java installation..."
+        ./installJava
+        ;;
+
+    2)
+        cd "$MAIN_DIR"
+        echo "> Running Bedrock installation..."
+        ./installBedrock
+        ;;
+
+    *)
+        echo "> Invalid response. Please run './install' again and choose 1 or 2."
+        exit 1
+        ;;
+esac
 
 echo "> Installing AFK (Away From Keyboard)..."
-python3 -m pip install --user --disable-pip-version-check -q bpytop >/dev/null 2>&1
-
-if [ -x "$HOME/.local/bin/bpytop" ]; then
+if python3 -m pip install --user --disable-pip-version-check -q bpytop >/dev/null 2>&1; then
     echo "> AFK dependency installed successfully."
 else
     echo "> Failed to install AFK dependency."
 fi
 
-echo ""
+echo

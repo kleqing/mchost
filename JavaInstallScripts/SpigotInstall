@@ -35,7 +35,17 @@ _________         _________ _______            _________ _        _
 sleep 7
 clear
 sleep 1
-../bin/java_bins/bin/java -jar BuildTools.jar
+if [ -f "../.mc_version" ]; then
+    MC_VERSION=$(cat ../.mc_version)
+else
+    MC_VERSION="latest"
+fi
+
+if [ "$MC_VERSION" = "latest" ] || [ "$MC_VERSION" = "snapshot" ]; then
+    ../bin/java_bins/bin/java -jar BuildTools.jar
+else
+    ../bin/java_bins/bin/java -jar BuildTools.jar --rev "$MC_VERSION"
+fi
 
 # changing the name of the file to appropriate name...
 

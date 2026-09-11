@@ -1,22 +1,87 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-export MAIN_DIR=$PWD
-export JAVA=$MAIN_DIR/bin/java_bins/bin/java
+MAIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SERVER_DIR="$MAIN_DIR/server"
+JAVA="$MAIN_DIR/bin/java_bins/bin/java"
+SERVER_TYPE_FILE="$MAIN_DIR/.server_type"
 
-cd "$MAIN_DIR/server" || exit 1
-
-mem=$(grep MemTotal /proc/meminfo | sed -e 's/MemTotal:[ ]*//' | sed -e 's/ kB//')
-mem_total=$((mem / 1024 / 1024))
-mem=$((mem_total - 1))
-
-if [ "$mem" -lt 1 ]; then
-    mem=1
+if [ ! -d "$SERVER_DIR" ]; then
+    echo "> Server directory not found: $SERVER_DIR"
+    exit 1
 fi
 
+if [ ! -x "$JAVA" ]; then
+    echo "> Bundled Java not found or not executable: $JAVA"
+    echo "> Run './install' again to install the Java runtime."
+    exit 1
+fi
+
+cd "$SERVER_DIR"
+
+# Keep Forge/NeoForge-generated run.sh intact. By prepending the bundled JDK
+# directory to PATH, the generated launcher still uses the Java version that
+# mchost installed for this Minecraft version.
+if [ -f "run.sh" ]; then
+    if [ -f "$SERVER_TYPE_FILE" ]; then
+        SERVER_TYPE="$(tr -d '\r\n' < "$SERVER_TYPE_FILE")"
+    else
+        SERVER_TYPE="forge/neoforge"
+    fi
+
+    echo "> ${SERVER_TYPE} launcher detected (run.sh)."
+    echo "> JVM memory/options are read from server/user_jvm_args.txt."
+
+    export PATH="$(dirname "$JAVA"):$PATH"
+    exec bash ./run.sh nogui
+fi
+
+# For jar-based servers, keep the old behaviour of using nearly all available
+# RAM while leaving roughly 1 GiB for the host OS / Cloud Shell.
+mem_kb=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
+mem_total_gb=$((mem_kb / 1024 / 1024))
+mem_gb=$((mem_total_gb - 1))
+
+if [ "$mem_gb" -lt 1 ]; then
+    mem_gb=1
+fi
+
+run_jar() {
+    local jar="$1"
+    local label="$2"
+
+    echo "> $label detected: $jar"
+    exec "$JAVA" -Xms${mem_gb}G -Xmx${mem_gb}G -jar "$jar" nogui
+}
+
+# Fabric installer creates both the vanilla server.jar and its own launcher.
+# The Fabric launcher must be preferred.
 if [ -f "fabric-server-launch.jar" ]; then
-    SERVER_JAR="fabric-server-launch.jar"
-else
-    SERVER_JAR="server.jar"
+    run_jar "fabric-server-launch.jar" "Fabric server"
 fi
 
-exec "$JAVA" -Xmx${mem}G -Xms${mem}G -jar "$SERVER_JAR" nogui
+# The installers in this repository normalize Vanilla/Paper/Spigot/BungeeCord,
+# Sponge and legacy Forge to server.jar.
+if [ -f "server.jar" ]; then
+    if [ -f "$SERVER_TYPE_FILE" ]; then
+        SERVER_TYPE="$(tr -d '\r\n' < "$SERVER_TYPE_FILE")"
+        run_jar "server.jar" "$SERVER_TYPE server"
+    else
+        run_jar "server.jar" "Java server"
+    fi
+fi
+
+# Fallbacks for manually copied server files.
+for pattern in 'paper-*.jar' 'purpur-*.jar' 'spigot-*.jar' 'forge-*.jar' 'sponge*.jar' 'BungeeCord.jar'; do
+    jar=$(find . -maxdepth 1 -type f -name "$pattern" ! -name '*installer*.jar' -printf '%f\n' 2>/dev/null | sort -V | tail -n 1)
+    if [ -n "$jar" ]; then
+        run_jar "$jar" "Java server"
+    fi
+done
+
+echo "> Unable to detect a supported Java server launcher."
+echo "> Expected one of:"
+echo "  - run.sh (modern Forge / NeoForge)"
+echo "  - fabric-server-launch.jar (Fabric)"
+echo "  - server.jar (Vanilla / Paper / Spigot / Sponge / BungeeCord / legacy Forge)"
+exit 1
